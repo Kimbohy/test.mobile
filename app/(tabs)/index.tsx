@@ -1,16 +1,18 @@
-import { Text } from "react-native";
+import { FlatList, Text } from "react-native";
 import { View } from "@/components/Themed";
-import { Link } from "expo-router";
+import ProductCard from "@/components/ProductCard";
+import { getProducts } from "@/service/product.service";
 
 export default function Products() {
+  const products = getProducts();
   return (
-    <View>
-      <Text className="text-2xl font-bold text-black dark:text-white">
-        Products
-      </Text>
-      <Link href="/product/1" asChild>
-        <Text className="text-blue-500">Go to Product 1</Text>
-      </Link>
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={products}
+        renderItem={({ item }) => <ProductCard product={item} />}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ gap: 12, marginTop: 15 }}
+      />
     </View>
   );
 }
