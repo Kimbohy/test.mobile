@@ -45,7 +45,7 @@ const Login = () => {
 
         <TouchableOpacity
           onPress={handleSignUp}
-          className="w-full py-4 mt-6 bg-blue-600 rounded-lg shadow-md active:bg-blue-700"
+          className="w-full py-4 mt-6 transition-transform bg-blue-600 rounded-lg shadow-md active:bg-blue-700 active:scale-95"
         >
           <Text className="text-lg font-semibold text-center text-white">
             Connexion

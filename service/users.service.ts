@@ -1,4 +1,5 @@
 import { mockUsers } from "@/data/users";
+import { User } from "@/types/user.type";
 import * as Crypto from "expo-crypto";
 
 const hashPassword = async (password: string): Promise<string> => {
@@ -12,25 +13,23 @@ const hashPassword = async (password: string): Promise<string> => {
 export const validateUser = async (
   email: string,
   password: string
-): Promise<boolean> => {
+): Promise<User | null> => {
   if (!email || !password) {
-    return false;
+    return null;
   }
 
   const hashedPassword = await hashPassword(password);
-
-  return (
-    mockUsers.filter(
-      (user) => user.email === email && user.password === hashedPassword
-    ).length > 0
+  const user = mockUsers.find(
+    (user) => user.email === email && user.password === hashedPassword
   );
+  return user || null;
 };
 
 export const createUser = async (
   email: string,
   name: string,
   password: string
-) => {
+): Promise<User | null> => {
   const hashedPassword = await hashPassword(password);
 
   const newUser = {
@@ -40,5 +39,9 @@ export const createUser = async (
     password: hashedPassword,
   };
   mockUsers.push(newUser);
-  return newUser;
+  return {
+    id: newUser.id,
+    email: newUser.email,
+    name: newUser.name,
+  };
 };

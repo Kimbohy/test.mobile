@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import { createUser, validateUser } from "@/service/users.service";
+import { createToken } from "@/util/token";
 
 interface AuthContextType {
   signIn: ({
@@ -54,10 +55,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string;
     password: string;
   }) => {
-    const valid = await validateUser(email, password);
+    const user = await validateUser(email, password);
 
-    if (valid) {
-      const token = "fake-token";
+    if (user) {
+      const token = createToken(user);
+
       await AsyncStorage.setItem("userToken", token);
       setUserToken(token);
     } else {
@@ -80,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const newUser = await createUser(email, name, password);
     if (newUser) {
       Alert.alert("Success", "User created successfully.");
-      const token = "fake-token";
+      const token = createToken(newUser);
       await AsyncStorage.setItem("userToken", token);
       setUserToken(token);
     } else {

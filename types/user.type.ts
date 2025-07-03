@@ -1,8 +1,8 @@
-export type userData = {
+export type UserData = {
   id: string;
   email: string;
   name: string;
   password: string;
 };
 
-export type user = Omit<userData, "password">;
+export type User = Omit<UserData, "password">;

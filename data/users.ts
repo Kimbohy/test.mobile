@@ -1,6 +1,6 @@
-import { userData } from "@/types/user.type";
+import { UserData } from "@/types/user.type";
 
-export const mockUsers: userData[] = [
+export const mockUsers: UserData[] = [
   {
     id: "0",
     email: "u@u.com",

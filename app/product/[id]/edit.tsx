@@ -65,7 +65,7 @@ const Edit = () => {
 
   if (!product) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50 dark:bg-gray-900">
+      <View className="items-center justify-center flex-1 bg-gray-50 dark:bg-gray-900">
         <Text className="text-xl text-gray-900 dark:text-white">
           Produit non trouvé
         </Text>
@@ -76,17 +76,17 @@ const Edit = () => {
   return (
     <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900">
       <View className="p-6">
-        <Text className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+        <Text className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
           Modifier le produit
         </Text>
 
         <View className="space-y-4">
           <View className="mb-4">
-            <Text className="text-base font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
               Nom du produit
             </Text>
             <TextInput
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white"
+              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               value={formData.name}
               onChangeText={(text) => setFormData({ ...formData, name: text })}
               placeholder="Nom du produit"
@@ -95,11 +95,11 @@ const Edit = () => {
           </View>
 
           <View className="mb-4">
-            <Text className="text-base font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
               Description
             </Text>
             <TextInput
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white"
+              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               value={formData.description}
               onChangeText={(text) =>
                 setFormData({ ...formData, description: text })
@@ -113,11 +113,11 @@ const Edit = () => {
           </View>
 
           <View className="mb-4">
-            <Text className="text-base font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
               Prix (Ar)
             </Text>
             <TextInput
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white"
+              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               value={formData.price}
               onChangeText={(text) => setFormData({ ...formData, price: text })}
               placeholder="Prix"
@@ -127,11 +127,11 @@ const Edit = () => {
           </View>
 
           <View className="mb-4">
-            <Text className="text-base font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
               Stock
             </Text>
             <TextInput
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white"
+              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               value={formData.stock}
               onChangeText={(text) => setFormData({ ...formData, stock: text })}
               placeholder="Quantité en stock"
@@ -141,11 +141,11 @@ const Edit = () => {
           </View>
 
           <View className="mb-4">
-            <Text className="text-base font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
               Catégorie
             </Text>
             <TouchableOpacity
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3"
+              className="px-4 py-3 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600"
               onPress={() => setShowCategoryPicker(!showCategoryPicker)}
             >
               <Text className="text-gray-900 dark:text-white">
@@ -154,7 +154,7 @@ const Edit = () => {
             </TouchableOpacity>
 
             {showCategoryPicker && (
-              <View className="mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg">
+              <View className="mt-2 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
                 {Object.values(Category).map((category) => (
                   <TouchableOpacity
                     key={category}
@@ -174,11 +174,11 @@ const Edit = () => {
           </View>
 
           <View className="mb-6">
-            <Text className="text-base font-medium mb-2 text-gray-700 dark:text-gray-300">
+            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
               Vendeur
             </Text>
             <TextInput
-              className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white"
+              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               value={formData.vendeurs}
               onChangeText={(text) =>
                 setFormData({ ...formData, vendeurs: text })
@@ -190,19 +190,19 @@ const Edit = () => {
 
           <View className="flex-row space-x-4">
             <TouchableOpacity
-              className="flex-1 bg-gray-500 dark:bg-gray-600 rounded-lg py-3"
+              className="flex-1 py-3 transition-transform bg-gray-500 rounded-lg dark:bg-gray-600 active:scale-95"
               onPress={() => router.back()}
             >
-              <Text className="text-white text-center text-lg font-semibold">
+              <Text className="text-lg font-semibold text-center text-white">
                 Annuler
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="flex-1 bg-blue-600 dark:bg-blue-500 rounded-lg py-3"
+              className="flex-1 py-3 transition-transform bg-blue-600 rounded-lg dark:bg-blue-500 active:scale-95"
               onPress={handleSave}
             >
-              <Text className="text-white text-center text-lg font-semibold">
+              <Text className="text-lg font-semibold text-center text-white">
                 Sauvegarder
               </Text>
             </TouchableOpacity>

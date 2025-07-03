@@ -65,10 +65,10 @@ const ProductDetail = () => {
             </View>
 
             <TouchableOpacity
-              className="mt-6 bg-blue-600 dark:bg-blue-500 rounded-xl p-4"
+              className="p-4 mt-6 transition-transform bg-blue-600 dark:bg-blue-500 rounded-xl active:scale-95"
               onPress={() => router.push(`/product/${productId}/edit`)}
             >
-              <Text className="text-white text-center text-lg font-semibold">
+              <Text className="text-lg font-semibold text-center text-white">
                 Modifier le produit
               </Text>
             </TouchableOpacity>

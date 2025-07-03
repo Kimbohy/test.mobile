@@ -73,7 +73,7 @@ export const mockProducts: product[] = [
     description: "Spécialité locale Famantaranandro authentique",
     price: 89.99,
     stock: 12,
-    category: Category.FOOD,
+    category: Category.ELECTRONICS,
     vendeurs: "LocalMarket",
     image: require("@/assets/images/products/famantaranandro.jpeg"),
     isActive: true,
