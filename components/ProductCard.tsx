@@ -2,8 +2,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { product } from "@/types/product.type";
-import { Category } from "../types/product.type";
-import { categoryColors } from "@/constants/Colors";
+import Badge from "./shared/CategoryBadge";
 
 const ProductCard = ({ product }: { product: product }) => {
   return (
@@ -23,10 +22,10 @@ const ProductCard = ({ product }: { product: product }) => {
           <Text className="text-xl dark:text-white">{product.name}</Text>
           <View className="justify-between flex-1">
             <Text className="text-sm text-gray-600 dark:text-white">
-              {product.price} MGA
+              {product.price} Ar
             </Text>
             <View className="self-end pb-1 pr-1">
-              <Badge category={product.category} />
+              <Badge category={product.category} variant="sm" />
             </View>
           </View>
         </View>
@@ -34,16 +33,6 @@ const ProductCard = ({ product }: { product: product }) => {
     </Pressable>
   );
 };
-
-function Badge({ category }: { category: Category }) {
-  const backgroundColor = categoryColors[category] || "#6B7280";
-
-  return (
-    <View style={[styles.badge, { backgroundColor }]}>
-      <Text style={styles.badgeText}>{category}</Text>
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
   card: {
@@ -62,17 +51,6 @@ const styles = StyleSheet.create({
     width: 170,
     height: 100,
     borderRadius: 8,
-  },
-  badge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: "flex-start",
-  },
-  badgeText: {
-    color: "white",
-    fontSize: 10,
-    fontWeight: "600",
   },
 });
 
