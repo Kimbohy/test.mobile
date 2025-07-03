@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string;
     password: string;
   }) => {
-    const valid = validateUser(email, password);
+    const valid = await validateUser(email, password);
 
     if (valid) {
       const token = "fake-token";
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     name: string;
     password: string;
   }) => {
-    const newUser = createUser(email, name, password);
+    const newUser = await createUser(email, name, password);
     if (newUser) {
       Alert.alert("Success", "User created successfully.");
       const token = "fake-token";
