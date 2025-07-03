@@ -1,8 +1,10 @@
-export const mockUsers = [
+import { userData } from "@/type/user.type";
+
+export const mockUsers: userData[] = [
   {
-    id: "1",
-    email: "test@example.com",
+    id: "0",
+    email: "u@u.com",
     name: "John Doe",
-    password: "hashedPassword",
+    password: "password",
   },
 ];

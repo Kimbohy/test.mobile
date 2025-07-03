@@ -41,10 +41,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const inAuthGroup = segments[0] === "auth";
 
     if (!userToken && !inAuthGroup) {
-      // User not logged in and not in auth group, redirect to auth
       router.replace("/auth");
     } else if (userToken && inAuthGroup) {
-      // User is logged in but in auth group, redirect to tabs
       router.replace("/(tabs)");
     }
   }, [userToken, loading, segments, router]);

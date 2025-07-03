@@ -1,6 +1,6 @@
-import { AuthContext, useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/AuthContext";
 import { Link } from "expo-router";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 
 const Login = () => {
@@ -47,7 +47,7 @@ const Login = () => {
 
         <Link href={"/auth/signup"} className="mt-4">
           <Text className="text-sm text-center text-blue-600">
-            Mot de passe oublié ?
+            Pas de compte? Créer un compte
           </Text>
         </Link>
       </View>

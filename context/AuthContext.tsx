@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
+import { createUser, validateUser } from "@/service/users.service";
 
 interface AuthContextType {
   signIn: ({
@@ -8,6 +9,15 @@ interface AuthContextType {
     password,
   }: {
     email: string;
+    password: string;
+  }) => Promise<void>;
+  signUp: ({
+    email,
+    name,
+    password,
+  }: {
+    email: string;
+    name: string;
     password: string;
   }) => Promise<void>;
   signOut: () => Promise<void>;
@@ -44,7 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string;
     password: string;
   }) => {
-    if (email === "u@u.com" && password === "password") {
+    const valid = validateUser(email, password);
+
+    if (valid) {
       const token = "fake-token";
       await AsyncStorage.setItem("userToken", token);
       setUserToken(token);
@@ -56,13 +68,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signUp = async ({
+    email,
+    name,
+    password,
+  }: {
+    email: string;
+    name: string;
+    password: string;
+  }) => {
+    const newUser = createUser(email, name, password);
+    if (newUser) {
+      Alert.alert("Success", "User created successfully.");
+      const token = "fake-token";
+      await AsyncStorage.setItem("userToken", token);
+      setUserToken(token);
+    } else {
+      Alert.alert("Error", "Failed to create user.");
+    }
+  };
+
   const signOut = async () => {
     await AsyncStorage.removeItem("userToken");
     setUserToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, userToken, loading }}>
+    <AuthContext.Provider
+      value={{ signIn, signOut, signUp, userToken, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
