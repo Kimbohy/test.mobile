@@ -12,6 +12,7 @@ export default function Products() {
         renderItem={({ item }) => <ProductCard product={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ gap: 12, marginTop: 15 }}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

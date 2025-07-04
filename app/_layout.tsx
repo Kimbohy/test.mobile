@@ -90,9 +90,14 @@ function RootLayoutNav() {
       <ProtectedRoute>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-          <Stack.Screen name="auth" options={{ headerShown: false }} />
-          <Stack.Screen name="Detail" options={{ headerShown: true }} />
+          <Stack.Screen name="auth/index" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="product/[id]/index"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </ProtectedRoute>
     </ThemeProvider>

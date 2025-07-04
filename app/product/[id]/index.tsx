@@ -1,8 +1,10 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { getProductById } from "@/service/product.service";
 import { Image } from "expo-image";
 import Badge from "@/components/shared/CategoryBadge";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProductDetail = () => {
   const { id } = useLocalSearchParams();
@@ -17,15 +19,26 @@ const ProductDetail = () => {
     );
   }
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <SafeAreaView
+      className="flex-1 bg-gray-50 dark:bg-gray-900"
+      edges={["top"]}
+    >
       <View className="flex-1">
-        <Image
-          source={product.image}
-          placeholder={product.name}
-          contentFit="cover"
-          transition={1000}
-          style={{ width: "100%", height: 400, borderRadius: 0 }}
-        />
+        <View className="relative">
+          <Image
+            source={product.image}
+            placeholder={product.name}
+            contentFit="cover"
+            transition={1000}
+            style={{ width: "100%", height: 400, borderRadius: 0 }}
+          />
+          <TouchableOpacity
+            className="absolute p-2 rounded-full top-4 left-4 bg-black/20"
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
         <View className="flex-1 -mt-6 bg-white shadow-lg dark:bg-gray-800 rounded-t-3xl">
           <View className="gap-4 p-6 space-y-4">
             <View className="flex-row items-start justify-between">
@@ -75,10 +88,8 @@ const ProductDetail = () => {
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default ProductDetail;

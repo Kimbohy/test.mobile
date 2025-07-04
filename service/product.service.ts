@@ -1,8 +1,29 @@
 import { mockProducts } from "@/data/products";
-import { product } from "@/types/product.type";
+import { Category, product } from "@/types/product.type";
 
-export const getProducts = (): product[] => {
-  return mockProducts;
+type Filters = {
+  category?: Category;
+  priceRange?: [number, number];
+  searchTerm?: string;
+};
+
+export const getProducts = (filters?: Filters): product[] => {
+  return mockProducts.filter((product) => {
+    const matchesCategory = filters?.category
+      ? product.category === filters.category
+      : true;
+
+    const matchesPriceRange = filters?.priceRange
+      ? product.price >= filters.priceRange[0] &&
+        product.price <= filters.priceRange[1]
+      : true;
+
+    const matchesSearchTerm = filters?.searchTerm
+      ? product.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      : true;
+
+    return matchesCategory && matchesPriceRange && matchesSearchTerm;
+  });
 };
 
 export const getProductById = (id: string): product | undefined => {
@@ -19,4 +40,19 @@ export const updateProduct = (
     return true;
   }
   return false;
+};
+
+export const deleteProduct = (id: string): boolean => {
+  const index = mockProducts.findIndex((product) => product.id === id);
+  if (index !== -1) {
+    mockProducts.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+
+export const addProduct = (newProduct: Omit<product, "id">): boolean => {
+  const id = String(Number(mockProducts[mockProducts.length - 1]?.id) + 1 || 1);
+  mockProducts.push({ ...newProduct, id });
+  return true;
 };
