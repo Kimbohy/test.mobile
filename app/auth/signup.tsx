@@ -1,16 +1,25 @@
 import { useAuthContext } from "@/context/AuthContext";
+import { signupSchema } from "@/schema/auth.schema";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import CustomTextInput from "@/components/shared/CustomTextInput";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
-const Login = () => {
+const Signup = () => {
   const { signUp } = useAuthContext();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
 
+  const { errors, validateField, validateForm, clearFieldError } =
+    useFormValidation(signupSchema);
+
   const handleSignUp = () => {
-    signUp({ email, name, password });
+    const isValid = validateForm({ email, name, password });
+    if (isValid) {
+      signUp({ email, name, password });
+    }
   };
 
   return (
@@ -21,25 +30,43 @@ const Login = () => {
         </Text>
 
         <View className="gap-5 space-y-4">
-          <TextInput
+          <CustomTextInput
             placeholder="Email"
+            fieldName="email"
             keyboardType="email-address"
             value={email}
-            onChangeText={setEmail}
-            className="w-full p-4 text-gray-700 border border-gray-300 rounded-lg bg-gray-50 focus:border-blue-500 focus:bg-white"
+            onChangeText={(text) => {
+              setEmail(text);
+              clearFieldError("email");
+            }}
+            validator={validateField}
+            variant="auth"
+            error={errors.email}
           />
-          <TextInput
+          <CustomTextInput
             placeholder="Nom"
+            fieldName="name"
             value={name}
-            onChangeText={setName}
-            className="w-full p-4 text-gray-700 border border-gray-300 rounded-lg bg-gray-50 focus:border-blue-500 focus:bg-white"
+            onChangeText={(text) => {
+              setName(text);
+              clearFieldError("name");
+            }}
+            validator={validateField}
+            variant="auth"
+            error={errors.name}
           />
-          <TextInput
+          <CustomTextInput
             placeholder="Mot de passe"
+            fieldName="password"
             secureTextEntry
             value={password}
-            onChangeText={setPassword}
-            className="w-full p-4 text-gray-700 border border-gray-300 rounded-lg bg-gray-50 focus:border-blue-500 focus:bg-white"
+            onChangeText={(text) => {
+              setPassword(text);
+              clearFieldError("password");
+            }}
+            validator={validateField}
+            variant="auth"
+            error={errors.password}
           />
         </View>
 
@@ -62,4 +89,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import "./global.css";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/components/useColorScheme";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider, useAuthContext } from "@/context/AuthContext";
 import { useRouter, useSegments } from "expo-router";
 

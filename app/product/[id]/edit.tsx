@@ -4,13 +4,13 @@ import {
   StyleSheet,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   Alert,
 } from "react-native";
 import { getProductById, updateProduct } from "@/service/product.service";
 import { Category } from "@/types/product.type";
+import FormInput from "@/components/shared/FormInput";
 
 const Edit = () => {
   const { id } = useLocalSearchParams();
@@ -81,64 +81,40 @@ const Edit = () => {
         </Text>
 
         <View className="space-y-4">
-          <View className="mb-4">
-            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
-              Nom du produit
-            </Text>
-            <TextInput
-              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              value={formData.name}
-              onChangeText={(text) => setFormData({ ...formData, name: text })}
-              placeholder="Nom du produit"
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+          <FormInput
+            label="Nom du produit"
+            placeholder="Nom du produit"
+            value={formData.name}
+            onChangeText={(text) => setFormData({ ...formData, name: text })}
+          />
 
-          <View className="mb-4">
-            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
-              Description
-            </Text>
-            <TextInput
-              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              value={formData.description}
-              onChangeText={(text) =>
-                setFormData({ ...formData, description: text })
-              }
-              placeholder="Description du produit"
-              placeholderTextColor="#9CA3AF"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
+          <FormInput
+            label="Description"
+            placeholder="Description du produit"
+            value={formData.description}
+            onChangeText={(text) =>
+              setFormData({ ...formData, description: text })
+            }
+            multiline
+            numberOfLines={4}
+            textAlignVertical="top"
+          />
 
-          <View className="mb-4">
-            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
-              Prix (Ar)
-            </Text>
-            <TextInput
-              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              value={formData.price}
-              onChangeText={(text) => setFormData({ ...formData, price: text })}
-              placeholder="Prix"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="numeric"
-            />
-          </View>
+          <FormInput
+            label="Prix (Ar)"
+            placeholder="Prix"
+            value={formData.price}
+            onChangeText={(text) => setFormData({ ...formData, price: text })}
+            keyboardType="numeric"
+          />
 
-          <View className="mb-4">
-            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
-              Stock
-            </Text>
-            <TextInput
-              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              value={formData.stock}
-              onChangeText={(text) => setFormData({ ...formData, stock: text })}
-              placeholder="Quantité en stock"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="numeric"
-            />
-          </View>
+          <FormInput
+            label="Stock"
+            placeholder="Quantité en stock"
+            value={formData.stock}
+            onChangeText={(text) => setFormData({ ...formData, stock: text })}
+            keyboardType="numeric"
+          />
 
           <View className="mb-4">
             <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
@@ -173,20 +149,15 @@ const Edit = () => {
             )}
           </View>
 
-          <View className="mb-6">
-            <Text className="mb-2 text-base font-medium text-gray-700 dark:text-gray-300">
-              Vendeur
-            </Text>
-            <TextInput
-              className="px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              value={formData.vendeurs}
-              onChangeText={(text) =>
-                setFormData({ ...formData, vendeurs: text })
-              }
-              placeholder="Nom du vendeur"
-              placeholderTextColor="#9CA3AF"
-            />
-          </View>
+          <FormInput
+            label="Vendeur"
+            placeholder="Nom du vendeur"
+            value={formData.vendeurs}
+            onChangeText={(text) =>
+              setFormData({ ...formData, vendeurs: text })
+            }
+            containerClassName="mb-6"
+          />
 
           <View className="flex-row space-x-4">
             <TouchableOpacity
