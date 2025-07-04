@@ -25,6 +25,8 @@ const categorySchema = z.nativeEnum(Category, {
 
 const vendeursSchema = z.string().min(1, "Le nom du vendeur est requis");
 
+const imageSchema = z.string().optional();
+
 // Main product schema
 export const productSchema = z.object({
   name: nameSchema,
@@ -33,6 +35,7 @@ export const productSchema = z.object({
   stock: stockSchema,
   category: categorySchema,
   vendeurs: vendeursSchema,
+  image: imageSchema,
 });
 
 export type ProductSchemaType = z.infer<typeof productSchema>;

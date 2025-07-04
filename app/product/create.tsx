@@ -1,14 +1,24 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import { addProduct } from "@/service/product.service";
 import { Category } from "@/types/product.type";
 import FormInput from "@/components/shared/FormInput";
 import { productSchema } from "@/schema/product.schema";
 import { useFormValidation } from "@/hooks/useFormValidation";
+import * as ImagePicker from "expo-image-picker";
 
 const Create = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -17,6 +27,7 @@ const Create = () => {
     stock: "",
     category: Category.ELECTRONICS,
     vendeurs: "",
+    image: "",
   });
 
   const { errors, validateField, validateForm, clearFieldError } =
@@ -24,41 +35,93 @@ const Create = () => {
 
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
-  const handleCreate = () => {
+  const pickImage = async () => {
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        Alert.alert(
+          "Permission requise",
+          "Vous devez autoriser l'accès à votre galerie pour sélectionner une image."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        setFormData({ ...formData, image: result.assets[0].uri });
+        clearFieldError("image");
+      }
+    } catch (error) {
+      Alert.alert(
+        "Erreur",
+        "Impossible de charger l'image. Veuillez réessayer."
+      );
+      console.error("Image picker error:", error);
+    }
+  };
+
+  const handleCreate = async () => {
     // Validate all fields at once
     const isValid = validateForm(formData);
 
     if (!isValid) {
-      // Find the first error to display in an alert
-      const errorMessages = Object.entries(errors)
-        .filter(([_, message]) => message !== null)
-        .map(([field, message]) => `${message}`);
+      // Wait a bit for the errors state to update, then check for errors
+      setTimeout(() => {
+        const errorMessages = Object.entries(errors)
+          .filter(([_, message]) => message !== null && message !== "")
+          .map(([field, message]) => `${message}`);
 
-      if (errorMessages.length > 0) {
-        Alert.alert("Erreur de validation", errorMessages[0]);
-        return;
-      }
+        if (errorMessages.length > 0) {
+          Alert.alert("Erreur de validation", errorMessages[0]);
+        } else {
+          Alert.alert(
+            "Erreur de validation",
+            "Veuillez vérifier tous les champs requis"
+          );
+        }
+      }, 100);
+      return;
     }
 
-    // Create new product
-    const success = addProduct({
-      name: formData.name,
-      description: formData.description,
-      price: Number(formData.price),
-      stock: Number(formData.stock),
-      category: formData.category,
-      vendeurs: formData.vendeurs,
-      // These fields would typically be set by the backend
-      image: "/assets/images/products/placeholder.jpg",
-      isActive: true,
-    });
+    setLoading(true);
 
-    if (success) {
-      Alert.alert("Succès", "Produit créé avec succès", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
-    } else {
-      Alert.alert("Erreur", "Impossible de créer le produit");
+    try {
+      // Create new product
+      const success = addProduct({
+        name: formData.name,
+        description: formData.description,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        category: formData.category,
+        vendeurs: formData.vendeurs,
+        // Use the selected image or fallback to default
+        image: formData.image || "/assets/images/products/default.jpeg",
+        isActive: true,
+      });
+
+      if (success) {
+        Alert.alert("Succès", "Produit créé avec succès", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        Alert.alert("Erreur", "Impossible de créer le produit");
+      }
+    } catch (error) {
+      Alert.alert(
+        "Erreur",
+        "Une erreur est survenue lors de la création du produit"
+      );
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,6 +131,32 @@ const Create = () => {
         <Text className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
           Créer un produit
         </Text>
+
+        {/* Image Picker Section */}
+        <View className="items-center mb-6">
+          <TouchableOpacity onPress={pickImage} className="mb-3">
+            {formData.image ? (
+              <Image
+                source={{ uri: formData.image }}
+                className="w-40 h-40 rounded-lg"
+              />
+            ) : (
+              <View className="items-center justify-center w-40 h-40 bg-gray-200 rounded-lg dark:bg-gray-700">
+                <Text className="text-gray-500 dark:text-gray-400">
+                  Ajouter une image
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={pickImage}
+            className="px-4 py-2 bg-blue-100 rounded-lg dark:bg-blue-900"
+          >
+            <Text className="text-blue-700 dark:text-blue-300">
+              {formData.image ? "Changer l'image" : "Sélectionner une image"}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <View className="space-y-4">
           <FormInput
@@ -182,10 +271,11 @@ const Create = () => {
             containerClassName="mb-6"
           />
 
-          <View className="flex-row space-x-4">
+          <View className="flex-row mt-6 space-x-4">
             <TouchableOpacity
               className="flex-1 py-3 transition-transform bg-gray-500 rounded-lg dark:bg-gray-600 active:scale-95"
               onPress={() => router.back()}
+              disabled={loading}
             >
               <Text className="text-lg font-semibold text-center text-white">
                 Annuler
@@ -193,12 +283,19 @@ const Create = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="flex-1 py-3 transition-transform bg-blue-600 rounded-lg dark:bg-blue-500 active:scale-95"
+              className={`flex-1 py-3 transition-transform ${
+                loading ? "bg-blue-400" : "bg-blue-600 active:scale-95"
+              } rounded-lg dark:bg-blue-500`}
               onPress={handleCreate}
+              disabled={loading}
             >
-              <Text className="text-lg font-semibold text-center text-white">
-                Créer
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text className="text-lg font-semibold text-center text-white">
+                  Créer
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
