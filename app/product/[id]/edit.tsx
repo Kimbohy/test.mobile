@@ -1,16 +1,11 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { getProductById, updateProduct } from "@/service/product.service";
 import { Category } from "@/types/product.type";
 import FormInput from "@/components/shared/FormInput";
+import { productSchema } from "@/schema/product.schema";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
 const Edit = () => {
   const { id } = useLocalSearchParams();
@@ -27,21 +22,25 @@ const Edit = () => {
     vendeurs: product?.vendeurs || "",
   });
 
+  const { errors, validateField, validateForm, clearFieldError } =
+    useFormValidation(productSchema);
+
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
   const handleSave = () => {
-    // Validation
-    if (!formData.name.trim()) {
-      Alert.alert("Erreur", "Le nom du produit est requis");
-      return;
-    }
-    if (!formData.price || isNaN(Number(formData.price))) {
-      Alert.alert("Erreur", "Le prix doit être un nombre valide");
-      return;
-    }
-    if (!formData.stock || isNaN(Number(formData.stock))) {
-      Alert.alert("Erreur", "Le stock doit être un nombre valide");
-      return;
+    // Validate all fields at once
+    const isValid = validateForm(formData);
+
+    if (!isValid) {
+      // Find the first error to display in an alert
+      const errorMessages = Object.entries(errors)
+        .filter(([_, message]) => message !== null)
+        .map(([field, message]) => `${message}`);
+
+      if (errorMessages.length > 0) {
+        Alert.alert("Erreur de validation", errorMessages[0]);
+        return;
+      }
     }
 
     // Update product
@@ -85,16 +84,26 @@ const Edit = () => {
             label="Nom du produit"
             placeholder="Nom du produit"
             value={formData.name}
-            onChangeText={(text) => setFormData({ ...formData, name: text })}
+            onChangeText={(text) => {
+              setFormData({ ...formData, name: text });
+              clearFieldError("name");
+            }}
+            fieldName="name"
+            validator={validateField}
+            error={errors.name}
           />
 
           <FormInput
             label="Description"
             placeholder="Description du produit"
             value={formData.description}
-            onChangeText={(text) =>
-              setFormData({ ...formData, description: text })
-            }
+            onChangeText={(text) => {
+              setFormData({ ...formData, description: text });
+              clearFieldError("description");
+            }}
+            fieldName="description"
+            validator={validateField}
+            error={errors.description}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
@@ -104,7 +113,13 @@ const Edit = () => {
             label="Prix (Ar)"
             placeholder="Prix"
             value={formData.price}
-            onChangeText={(text) => setFormData({ ...formData, price: text })}
+            onChangeText={(text) => {
+              setFormData({ ...formData, price: text });
+              clearFieldError("price");
+            }}
+            fieldName="price"
+            validator={validateField}
+            error={errors.price}
             keyboardType="numeric"
           />
 
@@ -112,7 +127,13 @@ const Edit = () => {
             label="Stock"
             placeholder="Quantité en stock"
             value={formData.stock}
-            onChangeText={(text) => setFormData({ ...formData, stock: text })}
+            onChangeText={(text) => {
+              setFormData({ ...formData, stock: text });
+              clearFieldError("stock");
+            }}
+            fieldName="stock"
+            validator={validateField}
+            error={errors.stock}
             keyboardType="numeric"
           />
 
@@ -121,13 +142,20 @@ const Edit = () => {
               Catégorie
             </Text>
             <TouchableOpacity
-              className="px-4 py-3 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600"
+              className={`px-4 py-3 bg-white border rounded-lg dark:bg-gray-800 ${
+                errors.category
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              }`}
               onPress={() => setShowCategoryPicker(!showCategoryPicker)}
             >
               <Text className="text-gray-900 dark:text-white">
                 {formData.category}
               </Text>
             </TouchableOpacity>
+            {errors.category && (
+              <Text className="mt-2 ml-2 text-red-500">{errors.category}</Text>
+            )}
 
             {showCategoryPicker && (
               <View className="mt-2 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-600">
@@ -138,6 +166,8 @@ const Edit = () => {
                     onPress={() => {
                       setFormData({ ...formData, category });
                       setShowCategoryPicker(false);
+                      // Validate the category after selection
+                      validateField("category", category);
                     }}
                   >
                     <Text className="text-gray-900 dark:text-white">
@@ -153,9 +183,13 @@ const Edit = () => {
             label="Vendeur"
             placeholder="Nom du vendeur"
             value={formData.vendeurs}
-            onChangeText={(text) =>
-              setFormData({ ...formData, vendeurs: text })
-            }
+            onChangeText={(text) => {
+              setFormData({ ...formData, vendeurs: text });
+              clearFieldError("vendeurs");
+            }}
+            fieldName="vendeurs"
+            validator={validateField}
+            error={errors.vendeurs}
             containerClassName="mb-6"
           />
 

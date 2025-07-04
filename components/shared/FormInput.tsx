@@ -9,6 +9,9 @@ interface FormInputProps extends TextInputProps {
   onChangeText: (text: string) => void;
   className?: string;
   containerClassName?: string;
+  fieldName?: string; // Field name for validation
+  validator?: (fieldName: any, value: any) => boolean; // Validator function
+  error?: string | null; // Error message
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -18,6 +21,9 @@ const FormInput: React.FC<FormInputProps> = ({
   onChangeText,
   className = "",
   containerClassName = "",
+  fieldName,
+  validator,
+  error,
   ...props
 }) => {
   return (
@@ -31,6 +37,9 @@ const FormInput: React.FC<FormInputProps> = ({
         onChangeText={onChangeText}
         placeholder={placeholder}
         className={className}
+        fieldName={fieldName}
+        validator={validator}
+        error={error}
         {...props}
       />
     </View>
