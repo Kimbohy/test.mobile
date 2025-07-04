@@ -14,6 +14,7 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider, useAuthContext } from "@/context/AuthContext";
 import { useRouter, useSegments } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -86,20 +87,25 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <ProtectedRoute>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/index" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="product/[id]/index"
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack>
-      </ProtectedRoute>
-    </ThemeProvider>
+    <SafeAreaView
+      className="flex-1 bg-gray-50 dark:bg-gray-900"
+      edges={["top"]}
+    >
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <ProtectedRoute>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/index" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="product/[id]/index"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
+        </ProtectedRoute>
+      </ThemeProvider>
+    </SafeAreaView>
   );
 }

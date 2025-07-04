@@ -1,8 +1,9 @@
 import { FlatList, Text, ActivityIndicator, Alert } from "react-native";
 import { View } from "@/components/Themed";
 import ProductCard from "@/components/ProductCard";
+import ProductListHeader from "@/components/ProductListHeader";
 import { getProductsPaginated } from "@/service/product.service";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { product } from "@/types/product.type";
 
 export default function Products() {
@@ -12,6 +13,7 @@ export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
 
   const loadProducts = async (page: number = 1, reset: boolean = true) => {
     if (page === 1) {
@@ -73,22 +75,6 @@ export default function Products() {
     return null;
   };
 
-  const renderHeader = () => {
-    if (totalPages > 0) {
-      return (
-        <View style={{ padding: 16, alignItems: "center" }}>
-          <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 8 }}>
-            Produits
-          </Text>
-          <Text style={{ color: "#666", fontSize: 14 }}>
-            Page {currentPage} sur {totalPages}
-          </Text>
-        </View>
-      );
-    }
-    return null;
-  };
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -102,13 +88,13 @@ export default function Products() {
 
   return (
     <View style={{ flex: 1 }}>
+      <ProductListHeader />
       <FlatList
         data={products}
         renderItem={({ item }) => <ProductCard product={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}
         showsVerticalScrollIndicator={false}
-        // ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
         onEndReached={loadNextPage}
         onEndReachedThreshold={0.1}
@@ -117,6 +103,10 @@ export default function Products() {
           setCurrentPage(1);
           loadProducts(1, true);
         }}
+        onScroll={(event) => {
+          setScrollY(event.nativeEvent.contentOffset.y);
+        }}
+        scrollEventThrottle={16}
       />
     </View>
   );

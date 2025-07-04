@@ -6,7 +6,7 @@ export type product = {
   stock: number;
   category: Category;
   vendeurs: string;
-  image: string;
+  image: string | number; // Can be string (URI) or number (require result)
   isActive: boolean;
 };
 
