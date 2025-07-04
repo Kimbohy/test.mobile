@@ -7,6 +7,20 @@ type Filters = {
   searchTerm?: string;
 };
 
+type PaginationOptions = {
+  page?: number;
+  limit?: number;
+};
+
+type PaginatedResponse = {
+  products: product[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
+
 export const getProducts = (filters?: Filters): product[] => {
   return mockProducts.filter((product) => {
     const matchesCategory = filters?.category
@@ -24,6 +38,49 @@ export const getProducts = (filters?: Filters): product[] => {
 
     return matchesCategory && matchesPriceRange && matchesSearchTerm;
   });
+};
+
+export const getProductsPaginated = async (
+  filters?: Filters,
+  pagination?: PaginationOptions
+): Promise<PaginatedResponse> => {
+  // Simulation du délai de chargement
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  const page = pagination?.page || 1;
+  const limit = pagination?.limit || 5;
+
+  const filteredProducts = mockProducts.filter((product) => {
+    const matchesCategory = filters?.category
+      ? product.category === filters.category
+      : true;
+
+    const matchesPriceRange = filters?.priceRange
+      ? product.price >= filters.priceRange[0] &&
+        product.price <= filters.priceRange[1]
+      : true;
+
+    const matchesSearchTerm = filters?.searchTerm
+      ? product.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      : true;
+
+    return matchesCategory && matchesPriceRange && matchesSearchTerm;
+  });
+
+  const totalCount = filteredProducts.length;
+  const totalPages = Math.ceil(totalCount / limit);
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const products = filteredProducts.slice(startIndex, endIndex);
+
+  return {
+    products,
+    totalCount,
+    currentPage: page,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
+  };
 };
 
 export const getProductById = (id: string): product | undefined => {
