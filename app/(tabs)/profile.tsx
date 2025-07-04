@@ -7,7 +7,6 @@ import { connectedUser } from "@/util/token";
 export default function ProfileScreen() {
   const { signOut, userToken } = useAuthContext();
   const user = userToken ? connectedUser(userToken) : null;
-  console.log(user);
 
   const publication: number = 2;
 

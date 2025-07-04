@@ -5,12 +5,26 @@ import { Image } from "expo-image";
 import Badge from "@/components/shared/CategoryBadge";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import { deleteProduct } from "@/service/product.service";
+import SuppressionModal from "@/components/shared/SuppressionModal";
 
 const ProductDetail = () => {
+  const [showSuppressionModal, setShowSuppressionModal] = useState(false);
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const productId = Array.isArray(id) ? id[0] : id;
   const product = getProductById(productId as string);
+
+  const handleDeleteProduct = () => {
+    const success = product && productId ? deleteProduct(productId) : false;
+    if (!success) {
+      console.error("Failed to delete product");
+      return;
+    }
+    setShowSuppressionModal(false);
+    router.back();
+  };
   if (!product) {
     return (
       <View>
@@ -77,17 +91,35 @@ const ProductDetail = () => {
               </Text>
             </View>
 
-            <TouchableOpacity
-              className="p-4 mt-6 transition-transform bg-blue-600 dark:bg-blue-500 rounded-xl active:scale-95"
-              onPress={() => router.push(`/product/${productId}/edit`)}
-            >
-              <Text className="text-lg font-semibold text-center text-white">
-                Modifier le produit
-              </Text>
-            </TouchableOpacity>
+            <View className="gap-2">
+              <TouchableOpacity
+                className="p-4 mt-6 transition-transform bg-blue-600 dark:bg-blue-500 rounded-xl active:scale-95"
+                onPress={() => router.push(`/product/${productId}/edit`)}
+              >
+                <Text className="text-lg font-semibold text-center text-white">
+                  Modifier le produit
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="p-3 transition-transform bg-red-500 border-2 border-red-600 rounded-xl active:scale-95"
+                onPress={() => setShowSuppressionModal(true)}
+              >
+                <Text className="text-lg font-semibold text-center text-white">
+                  Supprimer
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
+      {showSuppressionModal && (
+        <SuppressionModal
+          productId={productId}
+          onConfirm={handleDeleteProduct}
+          onCancel={() => setShowSuppressionModal(false)}
+        />
+      )}
     </SafeAreaView>
   );
 };

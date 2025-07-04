@@ -12,7 +12,7 @@ const ProductCard = ({ product }: { product: product }) => {
         style={styles.card}
       >
         <Image
-          source={product.image}
+          source={product.image || "@/assets/images/products/default.jpeg"}
           placeholder={product.name}
           contentFit="cover"
           transition={1000}
