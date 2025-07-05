@@ -3,7 +3,7 @@ import { Category, product } from "@/types/product.type";
 
 type Filters = {
   category?: Category;
-  priceRange?: [number, number];
+  priceRange?: [number | null, number | null];
   searchTerm?: string;
 };
 
@@ -21,25 +21,6 @@ type PaginatedResponse = {
   hasPreviousPage: boolean;
 };
 
-export const getProducts = (filters?: Filters): product[] => {
-  return mockProducts.filter((product) => {
-    const matchesCategory = filters?.category
-      ? product.category === filters.category
-      : true;
-
-    const matchesPriceRange = filters?.priceRange
-      ? product.price >= filters.priceRange[0] &&
-        product.price <= filters.priceRange[1]
-      : true;
-
-    const matchesSearchTerm = filters?.searchTerm
-      ? product.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
-      : true;
-
-    return matchesCategory && matchesPriceRange && matchesSearchTerm;
-  });
-};
-
 export const getProductsPaginated = async (
   filters?: Filters,
   pagination?: PaginationOptions
@@ -55,10 +36,31 @@ export const getProductsPaginated = async (
       ? product.category === filters.category
       : true;
 
-    const matchesPriceRange = filters?.priceRange
-      ? product.price >= filters.priceRange[0] &&
-        product.price <= filters.priceRange[1]
-      : true;
+    let matchesPriceRange = true;
+    if (filters?.priceRange) {
+      let [min, max] = filters.priceRange;
+
+      // Switch values if min is greater than max (only if both are not null)
+      if (min !== null && max !== null && min > max) {
+        [min, max] = [max, min];
+      }
+
+      // Handle cases where min or max might be null
+      const hasMin = min !== null && min !== undefined && !isNaN(min);
+      const hasMax = max !== null && max !== undefined && !isNaN(max);
+
+      if (hasMin && hasMax) {
+        // Both min and max are defined (TypeScript knows they're not null here)
+        matchesPriceRange = product.price >= min! && product.price <= max!;
+      } else if (hasMin) {
+        // Only min is defined
+        matchesPriceRange = product.price >= min!;
+      } else if (hasMax) {
+        // Only max is defined
+        matchesPriceRange = product.price <= max!;
+      }
+      // If neither min nor max are defined, matchesPriceRange remains true
+    }
 
     const matchesSearchTerm = filters?.searchTerm
       ? product.name.toLowerCase().includes(filters.searchTerm.toLowerCase())

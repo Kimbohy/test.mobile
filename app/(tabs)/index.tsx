@@ -1,9 +1,10 @@
-import { FlatList, Text, ActivityIndicator, Alert } from "react-native";
+import { Text, ActivityIndicator, Alert } from "react-native";
 import { View } from "@/components/Themed";
-import ProductCard from "@/components/ProductCard";
 import ProductListHeader from "@/components/ProductListHeader";
+import FilterComponent, { FilterOptions } from "@/components/FilterComponent";
+import ProductList from "@/components/ProductList";
 import { getProductsPaginated } from "@/service/product.service";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { product } from "@/types/product.type";
 import { useProductContext } from "@/context/ProductContext";
 
@@ -15,6 +16,13 @@ export default function Products() {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({
+    searchTerm: "",
+    category: undefined,
+    priceRange: undefined,
+  });
+  const [totalCount, setTotalCount] = useState(0);
 
   const { registerRefreshCallback } = useProductContext();
 
@@ -26,7 +34,16 @@ export default function Products() {
     }
 
     try {
-      const response = await getProductsPaginated({}, { page, limit: 7 });
+      const serviceFilters = {
+        searchTerm: filters.searchTerm || undefined,
+        category: filters.category,
+        priceRange: filters.priceRange,
+      };
+
+      const response = await getProductsPaginated(serviceFilters, {
+        page,
+        limit: 7,
+      });
 
       if (reset) {
         setProducts(response.products);
@@ -37,6 +54,7 @@ export default function Products() {
       setCurrentPage(response.currentPage);
       setHasNextPage(response.hasNextPage);
       setTotalPages(response.totalPages);
+      setTotalCount(response.totalCount);
     } catch (error) {
       Alert.alert("Erreur", "Impossible de charger les produits");
     } finally {
@@ -45,79 +63,105 @@ export default function Products() {
     }
   };
 
-  const loadNextPage = () => {
-    if (hasNextPage && !loadingMore) {
-      loadProducts(currentPage + 1, false);
-    }
-  };
+  const handleFiltersChange = useCallback(
+    (newFilters: FilterOptions) => {
+      // Éviter les mises à jour inutiles si les filtres n'ont pas changé
+      const currentFiltersStr = JSON.stringify(filters);
+      const newFiltersStr = JSON.stringify(newFilters);
 
+      if (currentFiltersStr !== newFiltersStr) {
+        setFilters(newFilters);
+        setCurrentPage(1);
+        // Don't clear products immediately to avoid filter component flickering
+        // setProducts([]);
+      }
+    },
+    [filters]
+  );
+
+  const toggleFilters = useCallback(() => {
+    setShowFilters(!showFilters);
+  }, [showFilters]);
+
+  // Effect to reload products when filters change
+  useEffect(() => {
+    loadProducts(1, true);
+  }, [filters]);
+
+  // Initial load and register refresh callback
   useEffect(() => {
     loadProducts();
 
     // Register refresh callback
     const unregister = registerRefreshCallback(() => {
       setCurrentPage(1);
+      setFilters({
+        searchTerm: "",
+        category: undefined,
+        priceRange: undefined,
+      });
       loadProducts(1, true);
     });
 
     return unregister;
   }, [registerRefreshCallback]);
 
-  const renderFooter = () => {
-    if (loadingMore) {
-      return (
-        <View style={{ padding: 20, alignItems: "center" }}>
-          <ActivityIndicator size="small" />
-          <Text style={{ marginTop: 8, color: "#666" }}>Chargement...</Text>
-        </View>
-      );
+  // Memoize callbacks to prevent unnecessary re-renders
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !loadingMore) {
+      loadProducts(currentPage + 1, false);
     }
+  }, [hasNextPage, loadingMore, currentPage]);
 
-    if (!hasNextPage && products.length > 0) {
-      return (
-        <View style={{ padding: 20, alignItems: "center" }}>
-          <Text style={{ color: "#666" }}>
-            Fin de la liste ({products.length} produits)
-          </Text>
-        </View>
-      );
-    }
+  const handleRefresh = useCallback(() => {
+    setCurrentPage(1);
+    setFilters({
+      searchTerm: "",
+      category: undefined,
+      priceRange: undefined,
+    });
+    loadProducts(1, true);
+  }, []);
 
-    return null;
-  };
+  const handleScroll = useCallback((event: any) => {
+    setScrollY(event.nativeEvent.contentOffset.y);
+  }, []);
 
-  if (loading) {
+  // Memoize filter component to prevent unnecessary re-renders - make it completely independent
+  const memoizedFilterComponent = useMemo(() => {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16, color: "#666" }}>
-          Chargement des produits...
-        </Text>
-      </View>
+      <FilterComponent
+        onFiltersChange={handleFiltersChange}
+        initialFilters={filters}
+      />
     );
-  }
+  }, [filters, handleFiltersChange]);
+
+  // Memoize hasActiveFilters to prevent unnecessary header re-renders
+  const hasActiveFilters = useMemo(() => {
+    return !!(filters.searchTerm || filters.category || filters.priceRange);
+  }, [filters.searchTerm, filters.category, filters.priceRange]);
 
   return (
     <View style={{ flex: 1 }}>
-      <ProductListHeader />
-      <FlatList
-        data={products}
-        renderItem={({ item }) => <ProductCard product={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={renderFooter}
-        onEndReached={loadNextPage}
-        onEndReachedThreshold={0.1}
-        refreshing={loading}
-        onRefresh={() => {
-          setCurrentPage(1);
-          loadProducts(1, true);
-        }}
-        onScroll={(event) => {
-          setScrollY(event.nativeEvent.contentOffset.y);
-        }}
-        scrollEventThrottle={16}
+      <ProductListHeader
+        onFilterPress={toggleFilters}
+        isFilterActive={showFilters}
+        resultsCount={totalCount}
+        hasActiveFilters={hasActiveFilters}
+      />
+      <ProductList
+        products={products}
+        loading={loading}
+        loadingMore={loadingMore}
+        hasNextPage={hasNextPage}
+        totalCount={totalCount}
+        filters={filters}
+        onEndReached={handleEndReached}
+        onRefresh={handleRefresh}
+        onScroll={handleScroll}
+        showFilters={showFilters}
+        filterComponent={memoizedFilterComponent}
       />
     </View>
   );
