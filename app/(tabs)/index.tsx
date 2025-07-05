@@ -5,6 +5,7 @@ import ProductListHeader from "@/components/ProductListHeader";
 import { getProductsPaginated } from "@/service/product.service";
 import { useState, useEffect, useRef } from "react";
 import { product } from "@/types/product.type";
+import { useProductContext } from "@/context/ProductContext";
 
 export default function Products() {
   const [products, setProducts] = useState<product[]>([]);
@@ -14,6 +15,8 @@ export default function Products() {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+
+  const { registerRefreshCallback } = useProductContext();
 
   const loadProducts = async (page: number = 1, reset: boolean = true) => {
     if (page === 1) {
@@ -50,7 +53,15 @@ export default function Products() {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+
+    // Register refresh callback
+    const unregister = registerRefreshCallback(() => {
+      setCurrentPage(1);
+      loadProducts(1, true);
+    });
+
+    return unregister;
+  }, [registerRefreshCallback]);
 
   const renderFooter = () => {
     if (loadingMore) {

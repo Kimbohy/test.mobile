@@ -13,6 +13,7 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider, useAuthContext } from "@/context/AuthContext";
+import { ProductProvider } from "@/context/ProductContext";
 import { useRouter, useSegments } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -78,7 +79,9 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <ProductProvider>
+        <RootLayoutNav />
+      </ProductProvider>
     </AuthProvider>
   );
 }
@@ -98,7 +101,7 @@ function RootLayoutNav() {
             <Stack.Screen name="auth/index" options={{ headerShown: false }} />
             <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
             <Stack.Screen
-              name="product/[id]/index"
+              name="product/[id]"
               options={{
                 headerShown: false,
               }}

@@ -87,7 +87,66 @@ export const getProductById = (id: string): product | undefined => {
   return mockProducts.find((product) => product.id === id);
 };
 
-export const updateProduct = (
+export const addProduct = async (
+  newProduct: Omit<product, "id">
+): Promise<boolean> => {
+  // Simulate API call delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  try {
+    const id = String(
+      Number(mockProducts[mockProducts.length - 1]?.id) + 1 || 1
+    );
+    mockProducts.push({ ...newProduct, id });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const updateProduct = async (
+  id: string,
+  updatedProduct: Partial<product>
+): Promise<boolean> => {
+  // Simulate API call delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  try {
+    const index = mockProducts.findIndex((product) => product.id === id);
+    if (index !== -1) {
+      mockProducts[index] = { ...mockProducts[index], ...updatedProduct };
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const deleteProduct = async (id: string): Promise<boolean> => {
+  // Simulate API call delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  try {
+    const index = mockProducts.findIndex((product) => product.id === id);
+    if (index !== -1) {
+      mockProducts.splice(index, 1);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Legacy sync methods for backward compatibility
+export const addProductSync = (newProduct: Omit<product, "id">): boolean => {
+  const id = String(Number(mockProducts[mockProducts.length - 1]?.id) + 1 || 1);
+  mockProducts.push({ ...newProduct, id });
+  return true;
+};
+
+export const updateProductSync = (
   id: string,
   updatedProduct: Partial<product>
 ): boolean => {
@@ -99,17 +158,11 @@ export const updateProduct = (
   return false;
 };
 
-export const deleteProduct = (id: string): boolean => {
+export const deleteProductSync = (id: string): boolean => {
   const index = mockProducts.findIndex((product) => product.id === id);
   if (index !== -1) {
     mockProducts.splice(index, 1);
     return true;
   }
   return false;
-};
-
-export const addProduct = (newProduct: Omit<product, "id">): boolean => {
-  const id = String(Number(mockProducts[mockProducts.length - 1]?.id) + 1 || 1);
-  mockProducts.push({ ...newProduct, id });
-  return true;
 };
