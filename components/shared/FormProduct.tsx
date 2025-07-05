@@ -21,7 +21,7 @@ import FormInput from "./FormInput";
 interface FormProductProps {
   initialValues?: Partial<product>;
   onSubmit: (data: Omit<product, "id">) => void;
-  onCancel: () => void;
+  onCancel: (resetForm: () => void) => void;
   isLoading?: boolean;
   submitButtonText?: string;
 }
@@ -49,10 +49,9 @@ const FormProduct: React.FC<FormProductProps> = ({
       ? (initialValues?.image as string)
       : null
   );
-
-  // Track if we have an image from mock data (require() result)
-  const hasInitialImage =
-    initialValues?.image && !isImageUri(initialValues.image as string);
+  const [hasInitialImage, setHasInitialImage] = useState<boolean>(
+    !!(initialValues?.image && !isImageUri(initialValues.image as string))
+  );
 
   useEffect(() => {
     requestPermissions();
@@ -125,6 +124,24 @@ const FormProduct: React.FC<FormProductProps> = ({
       { text: "Caméra", onPress: takePhoto },
       { text: "Annuler", style: "cancel" },
     ]);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      stock: "",
+      category: Category.ELECTRONICS,
+      vendeurs: "",
+      image: "",
+    });
+    setImageUri(null);
+    setHasInitialImage(false);
+  };
+
+  const handleCancel = () => {
+    onCancel(resetForm);
   };
 
   const handleSubmit = () => {
@@ -233,7 +250,7 @@ const FormProduct: React.FC<FormProductProps> = ({
             Catégorie *
           </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row space-x-2">
+            <View className="flex-row gap-2">
               {categories.map((category) => (
                 <TouchableOpacity
                   key={category}
@@ -263,9 +280,9 @@ const FormProduct: React.FC<FormProductProps> = ({
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row mt-8 space-x-4">
+        <View className="flex-row gap-4 mt-8">
           <TouchableOpacity
-            onPress={onCancel}
+            onPress={handleCancel}
             className="flex-1 py-3 bg-gray-200 rounded-lg dark:bg-gray-700"
             disabled={isLoading}
           >

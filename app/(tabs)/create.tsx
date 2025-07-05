@@ -71,7 +71,7 @@ const Create = () => {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = (resetForm: () => void) => {
     Alert.alert(
       "Annuler",
       "Êtes-vous sûr de vouloir annuler? Toutes les modifications seront perdues.",
@@ -80,7 +80,10 @@ const Create = () => {
         {
           text: "Oui",
           style: "destructive",
-          onPress: () => router.back(),
+          onPress: () => {
+            resetForm();
+            router.back();
+          },
         },
       ]
     );
