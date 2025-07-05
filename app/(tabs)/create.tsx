@@ -3,13 +3,17 @@ import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { product } from "@/types/product.type";
 import { addProduct } from "@/service/product.service";
+import { updateUserStats } from "@/service/users.service";
 import { useProductContext } from "@/context/ProductContext";
+import { useAuthContext } from "@/context/AuthContext";
+import { connectedUser } from "@/util/token";
 import FormProduct from "@/components/shared/FormProduct";
 
 const Create = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { triggerRefresh } = useProductContext();
+  const { userToken, refreshUserData } = useAuthContext();
 
   const handleSubmit = async (
     productData: Omit<product, "id">,
@@ -20,6 +24,18 @@ const Create = () => {
       const success = await addProduct(productData);
 
       if (success) {
+        // Update user statistics after successful product creation
+        if (userToken) {
+          const currentUser = connectedUser(userToken);
+          if (currentUser) {
+            const statsUpdated = await updateUserStats(currentUser.id);
+            if (statsUpdated) {
+              // Refresh user data to get updated statistics
+              await refreshUserData();
+            }
+          }
+        }
+
         // Reset the form after successful creation
         resetForm();
 

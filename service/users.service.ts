@@ -80,3 +80,51 @@ export const updateUser = async (
     name: user.name,
   };
 };
+
+export const updateUserStats = async (userId: string): Promise<boolean> => {
+  try {
+    const userIndex = mockUsers.findIndex((user) => user.id === userId);
+
+    if (userIndex === -1) {
+      return false;
+    }
+
+    const user = mockUsers[userIndex];
+
+    // If user doesn't have stats, create new ones
+    if (!user.stat) {
+      user.stat = {
+        created: 1,
+      };
+    } else {
+      // If user has stats, increment created count and update timestamp
+      user.stat.created += 1;
+    }
+
+    mockUsers[userIndex] = user;
+    return true;
+  } catch (error) {
+    console.error("Error updating user stats:", error);
+    return false;
+  }
+};
+
+export const getUserById = async (userId: string): Promise<User | null> => {
+  try {
+    const user = mockUsers.find((user) => user.id === userId);
+    if (!user) {
+      return null;
+    }
+
+    // Return user without password
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      stat: user.stat,
+    };
+  } catch (error) {
+    console.error("Error getting user by ID:", error);
+    return null;
+  }
+};

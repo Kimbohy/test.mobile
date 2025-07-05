@@ -2,15 +2,7 @@ import React from "react";
 import { Text, View, Image } from "react-native";
 import { User } from "@/types/user.type";
 
-interface ProfileInformationProps {
-  user: User;
-  publicationCount: number;
-}
-
-export default function ProfileInformation({
-  user,
-  publicationCount,
-}: ProfileInformationProps) {
+export default function ProfileInformation({ user }: { user: User }) {
   return (
     <View className="p-6 mb-6 bg-white rounded-lg shadow-sm dark:bg-gray-800">
       {/* Profile Picture */}
@@ -39,7 +31,7 @@ export default function ProfileInformation({
             Created Product
           </Text>
           <Text className="font-semibold text-gray-900 dark:text-white">
-            {publicationCount}
+            {user.stat?.created || 0}
           </Text>
         </View>
 

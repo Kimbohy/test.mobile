@@ -1,7 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
-import { createUser, validateUser, updateUser } from "@/service/users.service";
+import {
+  createUser,
+  validateUser,
+  updateUser,
+  getUserById,
+} from "@/service/users.service";
 import { createToken, connectedUser } from "@/util/token";
 
 interface AuthContextType {
@@ -26,6 +31,7 @@ interface AuthContextType {
     email?: string;
     password?: string;
   }) => Promise<boolean>;
+  refreshUserData: () => Promise<void>;
   signOut: () => Promise<void>;
   userToken: string | null;
   loading: boolean;
@@ -125,6 +131,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshUserData = async () => {
+    if (!userToken) {
+      return;
+    }
+
+    const currentUser = connectedUser(userToken);
+    if (!currentUser) {
+      return;
+    }
+
+    // Get updated user data from the service
+    const updatedUser = await getUserById(currentUser.id);
+    if (updatedUser) {
+      // Create new token with updated user data
+      const newToken = createToken(updatedUser);
+      await AsyncStorage.setItem("userToken", newToken);
+      setUserToken(newToken);
+    }
+  };
+
   const signOut = async () => {
     await AsyncStorage.removeItem("userToken");
     setUserToken(null);
@@ -132,7 +158,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ signIn, signOut, signUp, updateProfile, userToken, loading }}
+      value={{
+        signIn,
+        signOut,
+        signUp,
+        updateProfile,
+        refreshUserData,
+        userToken,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

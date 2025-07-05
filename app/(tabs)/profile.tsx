@@ -61,7 +61,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
       {/* Main Profile Information */}
-      <ProfileInformation user={user} publicationCount={publication} />
+      <ProfileInformation user={user} />
 
       {/* Secondary Actions - Only show for real users */}
       {user && (

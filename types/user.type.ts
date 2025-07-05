@@ -3,6 +3,9 @@ export type UserData = {
   email: string;
   name: string;
   password: string;
+  stat?: {
+    created: number;
+  };
 };
 
 export type User = Omit<UserData, "password">;
