@@ -1,15 +1,25 @@
 import React, { useState } from "react";
 import { Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { product } from "@/types/product.type";
-import { addProduct } from "@/service/product.service";
+import { updateProduct, getProductById } from "@/service/product.service";
 import { useProductContext } from "@/context/ProductContext";
 import FormProduct from "@/components/shared/FormProduct";
 
-const Create = () => {
+const EditProduct = () => {
   const router = useRouter();
+  const { productId } = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const { triggerRefresh } = useProductContext();
+
+  // Get existing product data
+  const existingProduct = productId
+    ? getProductById(productId as string)
+    : null;
+
+  if (!existingProduct) {
+    return null; // Or show error message
+  }
 
   const handleSubmit = async (
     productData: Omit<product, "id">,
@@ -17,26 +27,23 @@ const Create = () => {
   ) => {
     setIsLoading(true);
     try {
-      const success = await addProduct(productData);
+      const success = await updateProduct(productId as string, productData);
 
       if (success) {
-        // Reset the form after successful creation
-        resetForm();
-
         // Trigger refresh of product list
         triggerRefresh();
 
-        Alert.alert("Succès", "Le produit a été créé avec succès", [
+        Alert.alert("Succès", "Le produit a été modifié avec succès", [
           {
             text: "OK",
-            onPress: () => router.push("/(tabs)"),
+            onPress: () => router.back(),
           },
         ]);
       } else {
-        Alert.alert("Erreur", "Impossible de créer le produit");
+        Alert.alert("Erreur", "Impossible de modifier le produit");
       }
     } catch (error) {
-      Alert.alert("Erreur", "Une erreur est survenue lors de la création");
+      Alert.alert("Erreur", "Une erreur est survenue lors de la modification");
     } finally {
       setIsLoading(false);
     }
@@ -62,12 +69,13 @@ const Create = () => {
 
   return (
     <FormProduct
+      initialValues={existingProduct}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       isLoading={isLoading}
-      submitButtonText="Créer le produit"
+      submitButtonText="Modifier le produit"
     />
   );
 };
 
-export default Create;
+export default EditProduct;

@@ -90,7 +90,7 @@ const ProductDetail = () => {
             <TouchableOpacity
               className="p-4 mt-6 transition-transform bg-blue-600 dark:bg-blue-500 rounded-xl active:scale-95"
               onPress={() =>
-                router.push(`/(tabs)/create?productId=${productId}`)
+                router.push(`/product/edit?productId=${productId}`)
               }
             >
               <Text className="text-lg font-semibold text-center text-white">

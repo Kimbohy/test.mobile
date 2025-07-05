@@ -106,6 +106,12 @@ function RootLayoutNav() {
                 headerShown: false,
               }}
             />
+            <Stack.Screen
+              name="product/edit"
+              options={{
+                headerShown: false,
+              }}
+            />
           </Stack>
         </ProtectedRoute>
       </ThemeProvider>

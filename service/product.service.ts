@@ -96,10 +96,8 @@ export const addProduct = async (
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   try {
-    const id = String(
-      Number(mockProducts[mockProducts.length - 1]?.id) + 1 || 1
-    );
-    mockProducts.push({ ...newProduct, id });
+    const id = String(Number(mockProducts.length + 1 || 1));
+    mockProducts.unshift({ ...newProduct, id }); // changed from push to unshift
     return true;
   } catch (error) {
     return false;
@@ -139,32 +137,4 @@ export const deleteProduct = async (id: string): Promise<boolean> => {
   } catch (error) {
     return false;
   }
-};
-
-// Legacy sync methods for backward compatibility
-export const addProductSync = (newProduct: Omit<product, "id">): boolean => {
-  const id = String(Number(mockProducts[mockProducts.length - 1]?.id) + 1 || 1);
-  mockProducts.push({ ...newProduct, id });
-  return true;
-};
-
-export const updateProductSync = (
-  id: string,
-  updatedProduct: Partial<product>
-): boolean => {
-  const index = mockProducts.findIndex((product) => product.id === id);
-  if (index !== -1) {
-    mockProducts[index] = { ...mockProducts[index], ...updatedProduct };
-    return true;
-  }
-  return false;
-};
-
-export const deleteProductSync = (id: string): boolean => {
-  const index = mockProducts.findIndex((product) => product.id === id);
-  if (index !== -1) {
-    mockProducts.splice(index, 1);
-    return true;
-  }
-  return false;
 };

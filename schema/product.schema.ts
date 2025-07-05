@@ -8,11 +8,13 @@ const descriptionSchema = z.string().optional();
 
 const priceSchema = z
   .string()
+  .refine((val) => val.trim() !== "", "Le prix est requis")
   .refine((val) => !isNaN(Number(val)), "Le prix doit être un nombre valide")
   .refine((val) => Number(val) >= 0, "Le prix doit être positif");
 
 const stockSchema = z
   .string()
+  .refine((val) => val.trim() !== "", "Le stock est requis")
   .refine((val) => !isNaN(Number(val)), "Le stock doit être un nombre valide")
   .refine(
     (val) => Number(val) >= 0,

@@ -19,13 +19,17 @@ export const useProductValidation = () => {
 
   const validateForm = useCallback((formData: any): boolean => {
     try {
+      console.log("Validating form data:", formData);
       productSchema.parse(formData);
       setErrors({});
+      console.log("Validation successful");
       return true;
     } catch (error: any) {
+      console.log("Validation failed:", error);
       const newErrors: Record<string, string> = {};
       error.issues?.forEach((issue: any) => {
         newErrors[issue.path[0]] = issue.message;
+        console.log(`Validation error for ${issue.path[0]}: ${issue.message}`);
       });
       setErrors(newErrors);
       return false;

@@ -20,7 +20,7 @@ import FormInput from "./FormInput";
 
 interface FormProductProps {
   initialValues?: Partial<product>;
-  onSubmit: (data: Omit<product, "id">) => void;
+  onSubmit: (data: Omit<product, "id">, resetForm: () => void) => void;
   onCancel: (resetForm: () => void) => void;
   isLoading?: boolean;
   submitButtonText?: string;
@@ -36,8 +36,8 @@ const FormProduct: React.FC<FormProductProps> = ({
   const [formData, setFormData] = useState({
     name: initialValues?.name || "",
     description: initialValues?.description || "",
-    price: initialValues?.price?.toString() || "",
-    stock: initialValues?.stock?.toString() || "",
+    price: initialValues?.price ? initialValues.price.toString() : "",
+    stock: initialValues?.stock ? initialValues.stock.toString() : "",
     category: initialValues?.category || Category.ELECTRONICS,
     vendeurs: initialValues?.vendeurs || "",
     image: initialValues?.image || "",
@@ -145,7 +145,36 @@ const FormProduct: React.FC<FormProductProps> = ({
   };
 
   const handleSubmit = () => {
-    if (!validateForm(formData)) {
+    // Create a cleaned form data object for validation
+    const formDataForValidation = {
+      name: formData.name.trim(),
+      description: formData.description.trim(),
+      price: formData.price.trim(),
+      stock: formData.stock.trim(),
+      category: formData.category,
+      vendeurs: formData.vendeurs.trim(),
+      image: formData.image,
+    };
+
+    // Debug: log the form data being validated
+    console.log("Form data for validation:", formDataForValidation);
+    console.log("Current errors:", errors);
+
+    // Validate each field individually to get better error reporting
+    const isNameValid = validateField("name", formDataForValidation.name);
+    const isPriceValid = validateField("price", formDataForValidation.price);
+    const isStockValid = validateField("stock", formDataForValidation.stock);
+    const isVendeursValid = validateField(
+      "vendeurs",
+      formDataForValidation.vendeurs
+    );
+
+    // Use individual validations
+    const isFormValid =
+      isNameValid && isPriceValid && isStockValid && isVendeursValid;
+
+    if (!isFormValid) {
+      console.log("Validation failed, current errors:", errors);
       Alert.alert("Erreur", "Veuillez corriger les erreurs dans le formulaire");
       return;
     }
@@ -161,7 +190,7 @@ const FormProduct: React.FC<FormProductProps> = ({
       isActive: true,
     };
 
-    onSubmit(submitData);
+    onSubmit(submitData, resetForm);
   };
 
   const categories = Object.values(Category);
