@@ -7,22 +7,35 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { deleteProduct } from "@/service/product.service";
 import SuppressionModal from "@/components/shared/SuppressionModal";
+import { useProductContext } from "@/context/ProductContext";
 
 const ProductDetail = () => {
   const [showSuppressionModal, setShowSuppressionModal] = useState(false);
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { triggerRefresh } = useProductContext();
   const productId = Array.isArray(id) ? id[0] : id;
   const product = getProductById(productId as string);
 
-  const handleDeleteProduct = () => {
-    const success = product && productId ? deleteProduct(productId) : false;
-    if (!success) {
-      console.error("Failed to delete product");
+  const handleDeleteProduct = async () => {
+    if (!product || !productId) {
+      console.error("Product or productId not found");
       return;
     }
-    setShowSuppressionModal(false);
-    router.back();
+
+    try {
+      const success = await deleteProduct(productId);
+      if (success) {
+        // Trigger refresh of product list
+        triggerRefresh();
+        setShowSuppressionModal(false);
+        router.back();
+      } else {
+        console.error("Failed to delete product");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
   };
   if (!product) {
     return (
