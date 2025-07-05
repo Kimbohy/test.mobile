@@ -45,3 +45,38 @@ export const createUser = async (
     name: newUser.name,
   };
 };
+
+export const updateUser = async (
+  userId: string,
+  updatedData: { name?: string; email?: string; password?: string }
+): Promise<User | null> => {
+  const userIndex = mockUsers.findIndex((user) => user.id === userId);
+
+  if (userIndex === -1) {
+    return null;
+  }
+
+  const user = mockUsers[userIndex];
+
+  // Update the user data
+  if (updatedData.name) {
+    user.name = updatedData.name;
+  }
+
+  if (updatedData.email) {
+    user.email = updatedData.email;
+  }
+
+  if (updatedData.password) {
+    user.password = await hashPassword(updatedData.password);
+  }
+
+  mockUsers[userIndex] = user;
+
+  // Return user without password
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+  };
+};

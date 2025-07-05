@@ -25,9 +25,19 @@ export function useFormValidation<T extends Record<string, any>>(
       // This works with zod object schemas
       const schemaAny = schema as any;
 
-      if (schemaAny.shape && schemaAny.shape[fieldName]) {
+      // Handle ZodEffects (schemas with .refine()) by accessing the underlying schema
+      let actualSchema = schemaAny;
+      if (
+        schemaAny._def &&
+        schemaAny._def.typeName === "ZodEffects" &&
+        schemaAny._def.schema
+      ) {
+        actualSchema = schemaAny._def.schema;
+      }
+
+      if (actualSchema.shape && actualSchema.shape[fieldName]) {
         // Extract just the field's schema from the shape
-        const fieldSchema = schemaAny.shape[fieldName];
+        const fieldSchema = actualSchema.shape[fieldName];
 
         // Validate the field value directly with its schema
         const fieldResult = fieldSchema.safeParse(value);
@@ -49,36 +59,17 @@ export function useFormValidation<T extends Record<string, any>>(
         }
       }
 
-      // Fallback to whole schema validation if we can't extract the field
-      const partialData = { [fieldName]: value } as unknown as T;
-      // Only called for fallback
-      const result = schema.safeParse(partialData);
-
-      // Debug validation results (only once)
-      debugValidation(String(fieldName), value, result);
-
-      // For fallback validation, only care about errors for this specific field
-      if (result.success) {
+      // If we can't extract the field schema, just check if the value is valid for basic validation
+      // This prevents false positives when other required fields are missing
+      if (value === undefined || value === null || value === "") {
+        setErrors((prev) => ({
+          ...prev,
+          [fieldName]: `${String(fieldName)} is required`,
+        }));
+        return false;
+      } else {
         setErrors((prev) => ({ ...prev, [fieldName]: null }));
         return true;
-      } else {
-        // Extract error for this specific field - improve path checking
-        const fieldErrors = result.error.errors.filter(
-          (err: any) => err.path.length > 0 && err.path[0] === fieldName
-        );
-
-        if (fieldErrors.length > 0) {
-          // Use the first applicable error message
-          setErrors((prev) => ({
-            ...prev,
-            [fieldName]: fieldErrors[0].message,
-          }));
-        } else {
-          // No errors for this field, so it's valid within the context
-          setErrors((prev) => ({ ...prev, [fieldName]: null }));
-          return true;
-        }
-        return fieldErrors.length === 0;
       }
     } catch (error) {
       // This catch block handles unexpected errors, not validation errors

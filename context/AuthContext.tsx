@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
-import { createUser, validateUser } from "@/service/users.service";
-import { createToken } from "@/util/token";
+import { createUser, validateUser, updateUser } from "@/service/users.service";
+import { createToken, connectedUser } from "@/util/token";
 
 interface AuthContextType {
   signIn: ({
@@ -21,6 +21,11 @@ interface AuthContextType {
     name: string;
     password: string;
   }) => Promise<void>;
+  updateProfile: (updatedData: {
+    name?: string;
+    email?: string;
+    password?: string;
+  }) => Promise<boolean>;
   signOut: () => Promise<void>;
   userToken: string | null;
   loading: boolean;
@@ -90,6 +95,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (updatedData: {
+    name?: string;
+    email?: string;
+    password?: string;
+  }): Promise<boolean> => {
+    if (!userToken) {
+      Alert.alert("Error", "No user logged in");
+      return false;
+    }
+
+    const currentUser = connectedUser(userToken);
+    if (!currentUser) {
+      Alert.alert("Error", "Invalid user token");
+      return false;
+    }
+
+    const updatedUser = await updateUser(currentUser.id, updatedData);
+    if (updatedUser) {
+      // Create new token with updated user data
+      const newToken = createToken(updatedUser);
+      await AsyncStorage.setItem("userToken", newToken);
+      setUserToken(newToken);
+      Alert.alert("Success", "Profile updated successfully");
+      return true;
+    } else {
+      Alert.alert("Error", "Failed to update profile");
+      return false;
+    }
+  };
+
   const signOut = async () => {
     await AsyncStorage.removeItem("userToken");
     setUserToken(null);
@@ -97,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ signIn, signOut, signUp, userToken, loading }}
+      value={{ signIn, signOut, signUp, updateProfile, userToken, loading }}
     >
       {children}
     </AuthContext.Provider>

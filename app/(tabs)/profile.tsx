@@ -1,105 +1,89 @@
-import { TouchableOpacity, ScrollView } from "react-native";
+import React from "react";
+import { ScrollView } from "react-native";
 
 import { Text, View } from "@/components/Themed";
+import ProfileInformation from "@/components/profile/ProfileInformation";
+import ProfileActions from "@/components/profile/ProfileActions";
 import { useAuthContext } from "@/context/AuthContext";
 import { connectedUser } from "@/util/token";
+import { useFormValidation } from "@/hooks/useFormValidation";
+import { useProfileEdit } from "@/hooks/profile/useProfileEdit";
+import { useProfileActions } from "@/hooks/profile/useProfileActions";
+import { profileUpdateSchema } from "@/schema/auth.schema";
+import { PROFILE_CONSTANTS } from "@/constants/profile.constants";
+import { User } from "@/types/user.type";
 
 export default function ProfileScreen() {
-  const { signOut, userToken } = useAuthContext();
+  const { signOut, userToken, updateProfile } = useAuthContext();
   const user = userToken ? connectedUser(userToken) : null;
 
-  const publication: number = 2;
+  const { validateField, validateForm, errors, clearErrors } =
+    useFormValidation(profileUpdateSchema);
+
+  const { handleSignOut } = useProfileActions(signOut);
+
+  const publication: number = PROFILE_CONSTANTS.DEFAULT_PUBLICATION_COUNT;
+
+  // Always call hooks - use user or fallback to handle the case when user is not available
+  const fallbackUser: User = { id: "", name: "", email: "" };
+  const currentUser = user || fallbackUser;
+  const {
+    isEditModalVisible,
+    editedName,
+    editedEmail,
+    newPassword,
+    confirmPassword,
+    isLoading,
+    setEditedName,
+    setEditedEmail,
+    setNewPassword,
+    setConfirmPassword,
+    handleEditProfile,
+    handleSaveProfile,
+    handleCloseModal,
+  } = useProfileEdit({
+    user: currentUser,
+    updateProfile,
+    validateForm: user ? validateForm : () => true, // Skip validation when no real user
+    clearErrors,
+  });
 
   if (!user) {
-    return;
+    return (
+      <View className="items-center justify-center flex-1 bg-gray-50 dark:bg-gray-900">
+        <Text className="text-lg text-gray-600 dark:text-gray-400">
+          No user logged in
+        </Text>
+      </View>
+    );
   }
 
-  const handleSignOut = () => {
-    signOut();
-  };
-
   return (
-    <ScrollView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      <View className="px-6 py-8">
-        {/* Header */}
-        <View className="mb-8">
-          <Text className="mb-2 text-3xl font-bold text-gray-800 dark:text-white">
-            Profile
-          </Text>
-          <Text className="text-gray-600 dark:text-gray-300">
-            Manage your account and preferences
-          </Text>
-        </View>
+    <ScrollView className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
+      {/* Main Profile Information */}
+      <ProfileInformation user={user} publicationCount={publication} />
 
-        {/* Profile Card */}
-        <View className="p-6 mb-6 bg-white shadow-lg dark:bg-gray-800 rounded-2xl">
-          {/* Avatar Section */}
-          <View className="items-center mb-6">
-            <View className="items-center justify-center w-24 h-24 mb-4 bg-blue-600 rounded-full">
-              <Text className="text-3xl font-bold text-white">
-                {user.name?.charAt(0).toUpperCase() || "U"}
-              </Text>
-            </View>
-            <Text className="text-xl font-bold text-gray-800 dark:text-white">
-              {user.name || "--"}
-            </Text>
-          </View>
-
-          {/* User Info */}
-          <View className="space-y-4">
-            <View className="flex-row items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-              <View className="items-center justify-center w-10 h-10 mr-4 bg-blue-100 rounded-full dark:bg-blue-900">
-                <Text className="text-lg text-blue-600 dark:text-blue-400">
-                  @
-                </Text>
-              </View>
-              <View className="flex-1">
-                <Text className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                  Email Address
-                </Text>
-                <Text className="font-medium text-gray-800 dark:text-white">
-                  {user.email || "--"}
-                </Text>
-              </View>
-            </View>
-
-            <View className="flex-row items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-              <View className="items-center justify-center w-10 h-10 mr-4 bg-green-100 rounded-full dark:bg-green-900">
-                <Text className="text-lg text-green-600 dark:text-green-400">
-                  #
-                </Text>
-              </View>
-              <View className="flex-1">
-                <Text className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                  Publications
-                </Text>
-                {publication > 0 ? (
-                  <Text className="font-medium text-gray-800 dark:text-white">
-                    {publication}{" "}
-                    {publication === 1 ? "Publication" : "Publications"}
-                  </Text>
-                ) : (
-                  <Text className="font-medium text-gray-500 dark:text-gray-400">
-                    No Publications Yet
-                  </Text>
-                )}
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Actions */}
-        <View className="space-y-4">
-          <TouchableOpacity
-            onPress={handleSignOut}
-            className="px-6 py-4 text-white transition-transform bg-red-600 shadow-md hover:bg-red-700 rounded-xl active:scale-95"
-          >
-            <Text className="text-lg font-semibold text-center text-white">
-              Sign Out
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      {/* Secondary Actions - Only show for real users */}
+      {user && (
+        <ProfileActions
+          onEditProfile={handleEditProfile}
+          onSignOut={handleSignOut}
+          isEditModalVisible={isEditModalVisible}
+          isLoading={isLoading}
+          editedName={editedName}
+          editedEmail={editedEmail}
+          newPassword={newPassword}
+          confirmPassword={confirmPassword}
+          errors={errors}
+          onCloseModal={handleCloseModal}
+          onSaveProfile={handleSaveProfile}
+          onNameChange={setEditedName}
+          onEmailChange={setEditedEmail}
+          onNewPasswordChange={setNewPassword}
+          onConfirmPasswordChange={setConfirmPassword}
+          validateField={validateField}
+        />
+      )}
     </ScrollView>
   );
 }

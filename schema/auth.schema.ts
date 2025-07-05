@@ -43,4 +43,25 @@ export const passwordChangeSchema = z.object({
   newPassword: newPasswordSchema,
 });
 
+export const profileUpdateSchema = z
+  .object({
+    name: nameSchema,
+    email: emailSchema,
+    newPassword: newPasswordSchema.optional(),
+    confirmPassword: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.newPassword && data.newPassword !== data.confirmPassword) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Les mots de passe ne correspondent pas",
+      path: ["confirmPassword"],
+    }
+  );
+
 export type AuthSchemaType = z.infer<typeof authSchema>;
+export type ProfileUpdateSchemaType = z.infer<typeof profileUpdateSchema>;
