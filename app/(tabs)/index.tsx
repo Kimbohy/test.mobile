@@ -1,5 +1,4 @@
-import { Text, ActivityIndicator, Alert } from "react-native";
-import { View } from "@/components/Themed";
+import { Alert, View } from "react-native";
 import ProductListHeader from "@/components/ProductListHeader";
 import FilterComponent, { FilterOptions } from "@/components/FilterComponent";
 import ProductList from "@/components/ProductList";
@@ -143,7 +142,7 @@ export default function Products() {
   }, [filters.searchTerm, filters.category, filters.priceRange]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1 bg-gray-50 dark:bg-gray-900">
       <ProductListHeader
         onFilterPress={toggleFilters}
         isFilterActive={showFilters}

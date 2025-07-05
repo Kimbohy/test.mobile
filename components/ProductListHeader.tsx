@@ -1,6 +1,5 @@
 import React, { memo } from "react";
-import { Text, TouchableOpacity } from "react-native";
-import { View } from "@/components/Themed";
+import { Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 interface ProductListHeaderProps {
@@ -17,34 +16,14 @@ const ProductListHeader = memo(function ProductListHeader({
   hasActiveFilters = false,
 }: ProductListHeaderProps) {
   return (
-    <View
-      style={{
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: resultsCount !== undefined ? 8 : 0,
-        }}
-      >
+    <View className="px-4 pt-4">
+      <View className="flex-row items-center justify-between ">
         <Text className="text-2xl font-bold dark:text-white">
           Liste des produits
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {hasActiveFilters && (
-            <View
-              style={{
-                backgroundColor: "#007AFF",
-                borderRadius: 10,
-                width: 8,
-                height: 8,
-                marginRight: 8,
-              }}
-            />
+            <View className="w-2 h-2 mr-2 bg-blue-500 rounded-full" />
           )}
           <TouchableOpacity onPress={onFilterPress} style={{ padding: 8 }}>
             <MaterialIcons
@@ -56,7 +35,7 @@ const ProductListHeader = memo(function ProductListHeader({
         </View>
       </View>
       {resultsCount !== undefined && isFilterActive && (
-        <Text style={{ color: "#666", fontSize: 14 }}>
+        <Text className="text-gray-600 dark:text-gray-400">
           {resultsCount} produit{resultsCount !== 1 ? "s" : ""} trouvé
           {resultsCount !== 1 ? "s" : ""}
           {hasActiveFilters ? " avec les filtres appliqués" : ""}

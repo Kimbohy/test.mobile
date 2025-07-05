@@ -1,6 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Modal } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { TouchableOpacity, Modal, Text, View } from "react-native";
 import FormInput from "@/components/shared/FormInput";
 import LoadingButton from "@/components/shared/LoadingButton";
 import { PROFILE_CONSTANTS } from "@/constants/profile.constants";
@@ -41,11 +40,11 @@ export default function EditProfileModal({
   return (
     <Modal
       visible={isVisible}
-      animationType={PROFILE_CONSTANTS.MODAL_ANIMATION_TYPE}
+      animationType="fade"
       transparent={true}
       onRequestClose={onClose}
     >
-      <View className="items-center justify-center flex-1 bg-black bg-opacity-50">
+      <View className="items-center justify-center flex-1 dark:bg-gray-900 bg-gray-50">
         <View className="w-11/12 max-w-md p-6 m-4 bg-white rounded-lg dark:bg-gray-800">
           <Text className="mb-6 text-xl font-bold text-gray-900 dark:text-white">
             Edit Profile
@@ -114,7 +113,7 @@ export default function EditProfileModal({
               className="px-4 py-2 border border-gray-300 rounded-lg dark:border-gray-600"
               disabled={isLoading}
             >
-              <Text className="text-gray-300">Cancel</Text>
+              <Text className="text-gray-600 dark:text-gray-300">Cancel</Text>
             </TouchableOpacity>
             <LoadingButton
               onPress={onSave}

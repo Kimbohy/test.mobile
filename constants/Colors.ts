@@ -1,22 +1,28 @@
 import { Category } from "@/types/product.type";
 
 const tintColorLight = "#2f95dc";
-const tintColorDark = "#fff";
+const tintColorDark = "#0A84FF";
 
 export default {
   light: {
-    text: "#000",
-    background: "#fff",
+    text: "#1f2937", // gris très foncé plutôt que #000
+    background: "#f9fafb", // blanc cassé plus doux
     tint: tintColorLight,
-    tabIconDefault: "#ccc",
+    tabIconDefault: "#9ca3af", // gris moyen pour icon inactive
     tabIconSelected: tintColorLight,
+    border: "#e5e7eb", // couleur de séparation subtile
+    card: "#ffffff", // couleur de fond de carte
+    shadow: "rgba(0, 0, 0, 0.1)", // ombre légère
   },
   dark: {
-    text: "#fff",
-    background: "#000",
+    text: "#e5e7eb", // gris clair pour texte
+    background: "#121212", // gris anthracite (moins agressif que #000)
     tint: tintColorDark,
-    tabIconDefault: "#ccc",
+    tabIconDefault: "#6b7280", // gris plus foncé
     tabIconSelected: tintColorDark,
+    border: "#2c2c2e", // ligne de séparation discrète
+    card: "#1e1e1f", // fond de carte en dark
+    shadow: "rgba(0, 0, 0, 0.6)", // ombre plus marquée pour relief
   },
 };
 

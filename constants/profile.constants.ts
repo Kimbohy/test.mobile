@@ -1,6 +1,5 @@
 export const PROFILE_CONSTANTS = {
   DEFAULT_PUBLICATION_COUNT: 2,
-  MODAL_ANIMATION_TYPE: "slide" as const,
   FORM_VALIDATION_MESSAGES: {
     VALIDATION_ERROR: "Please fix the errors before saving",
     NO_CHANGES: "No changes to save",

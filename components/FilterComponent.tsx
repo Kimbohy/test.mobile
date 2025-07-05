@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, memo, useCallback } from "react";
-import { TextInput, TouchableOpacity, Text, ScrollView } from "react-native";
-import { View } from "@/components/Themed";
+import { TextInput, TouchableOpacity, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Category } from "@/types/product.type";
 import SelectComponent from "@/components/shared/SelectComponent";
@@ -89,42 +88,12 @@ const FilterComponent = memo(function FilterComponent({
   };
 
   return (
-    <View
-      style={{
-        padding: 16,
-        backgroundColor: "#f8f9fa",
-        marginHorizontal: 0,
-        marginTop: 8,
-        marginBottom: 8,
-        borderRadius: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-      }}
-    >
+    <View className="p-4 mx-0 mt-2 mb-2 rounded-xl">
       {/* Search Input */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          backgroundColor: "white",
-          borderRadius: 8,
-          paddingHorizontal: 12,
-          marginBottom: 16,
-          borderWidth: 1,
-          borderColor: "#e1e5e9",
-        }}
-      >
+      <View className="flex-row items-center px-3 mb-4 bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-600">
         <Ionicons name="search" size={20} color="#6c757d" />
         <TextInput
-          style={{
-            flex: 1,
-            paddingVertical: 12,
-            paddingHorizontal: 8,
-            fontSize: 16,
-          }}
+          className="flex-1 px-2 py-3 text-base dark:text-gray-200"
           placeholder="Rechercher des produits..."
           value={searchTerm}
           onChangeText={setSearchTerm}
@@ -145,15 +114,8 @@ const FilterComponent = memo(function FilterComponent({
       </View>
 
       {/* Category Filter */}
-      <View style={{ marginBottom: 16 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "600",
-            marginBottom: 8,
-            color: "#495057",
-          }}
-        >
+      <View className="mb-4">
+        <Text className="mb-2 text-base font-semibold text-gray-600 dark:text-gray-400">
           Catégorie
         </Text>
         <SelectComponent
@@ -165,29 +127,14 @@ const FilterComponent = memo(function FilterComponent({
       </View>
 
       {/* Price Range Filter */}
-      <View style={{ marginBottom: 16 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "600",
-            marginBottom: 8,
-            color: "#495057",
-          }}
-        >
+      <View className="mb-4">
+        <Text className="mb-2 text-base font-semibold text-gray-600 dark:text-gray-400">
           Prix (Ar)
         </Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <View style={{ flex: 1 }}>
+        <View className="flex-row items-center gap-2">
+          <View className="flex-1">
             <TextInput
-              style={{
-                backgroundColor: "white",
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingVertical: 12,
-                borderWidth: 1,
-                borderColor: "#e1e5e9",
-                fontSize: 16,
-              }}
+              className="px-3 py-3 text-base bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
               placeholder="Prix min"
               value={minPrice}
               onChangeText={setMinPrice}
@@ -196,18 +143,10 @@ const FilterComponent = memo(function FilterComponent({
               placeholderTextColor="#6c757d"
             />
           </View>
-          <Text style={{ color: "#6c757d", fontSize: 16 }}>-</Text>
-          <View style={{ flex: 1 }}>
+          <Text className="text-base text-gray-500">-</Text>
+          <View className="flex-1">
             <TextInput
-              style={{
-                backgroundColor: "white",
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingVertical: 12,
-                borderWidth: 1,
-                borderColor: "#e1e5e9",
-                fontSize: 16,
-              }}
+              className="px-3 py-3 text-base bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
               placeholder="Prix max"
               value={maxPrice}
               onChangeText={setMaxPrice}
@@ -222,25 +161,11 @@ const FilterComponent = memo(function FilterComponent({
       {/* Clear Filters Button */}
       {(searchTerm || selectedCategory || minPrice || maxPrice) && (
         <TouchableOpacity
-          style={{
-            backgroundColor: "#dc3545",
-            borderRadius: 8,
-            paddingVertical: 12,
-            alignItems: "center",
-            flexDirection: "row",
-            justifyContent: "center",
-          }}
+          className="flex-row items-center justify-center py-3 bg-blue-500 rounded-lg"
           onPress={clearFilters}
         >
           <Ionicons name="refresh" size={16} color="white" />
-          <Text
-            style={{
-              color: "white",
-              fontSize: 14,
-              fontWeight: "600",
-              marginLeft: 8,
-            }}
-          >
+          <Text className="ml-2 text-sm font-semibold text-white">
             Effacer les filtres
           </Text>
         </TouchableOpacity>

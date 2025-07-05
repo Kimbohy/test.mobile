@@ -1,6 +1,5 @@
 import React from "react";
-import { TouchableOpacity, ActivityIndicator } from "react-native";
-import { Text } from "@/components/Themed";
+import { TouchableOpacity, ActivityIndicator, Text } from "react-native";
 
 interface LoadingButtonProps {
   onPress: () => void;

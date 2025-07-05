@@ -23,9 +23,9 @@ const Login = () => {
   };
 
   return (
-    <View className="items-center justify-center flex-1 w-full p-3 bg-gray-50">
+    <View className="items-center justify-center flex-1 w-full p-3 bg-gray-50 dark:bg-gray-900">
       <View className="w-full">
-        <Text className="mb-8 text-3xl font-bold text-center text-gray-800">
+        <Text className="mb-8 text-3xl font-bold text-center text-gray-800 dark:text-gray-100">
           Bienvenue
         </Text>
 
@@ -60,7 +60,7 @@ const Login = () => {
 
         <TouchableOpacity
           onPress={handleSignIn}
-          className="w-full py-4 mt-6 transition-transform bg-blue-600 rounded-lg shadow-md active:bg-blue-700 active:scale-95"
+          className="w-full py-4 mt-6 transition-transform bg-blue-600 rounded-lg shadow-md dark:bg-blue-700 active:bg-blue-700 dark:active:bg-blue-800 active:scale-95"
         >
           <Text className="text-lg font-semibold text-center text-white">
             Connexion
@@ -68,7 +68,7 @@ const Login = () => {
         </TouchableOpacity>
 
         <Link href={"/auth/signup"} className="mt-4">
-          <Text className="text-sm text-center text-blue-600">
+          <Text className="text-sm text-center text-blue-600 dark:text-blue-400">
             Pas de compte? Créer un compte
           </Text>
         </Link>

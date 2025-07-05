@@ -1,6 +1,5 @@
 import React, { memo } from "react";
-import { FlatList, Text, ActivityIndicator } from "react-native";
-import { View } from "@/components/Themed";
+import { FlatList, Text, ActivityIndicator, View } from "react-native";
 import ProductCard from "@/components/ProductCard";
 import { product } from "@/types/product.type";
 import { FilterOptions } from "@/components/FilterComponent";

@@ -1,7 +1,6 @@
 import React from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
-import { Text, View } from "@/components/Themed";
 import ProfileInformation from "@/components/profile/ProfileInformation";
 import ProfileActions from "@/components/profile/ProfileActions";
 import { useAuthContext } from "@/context/AuthContext";
@@ -59,7 +58,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
+    <ScrollView className="flex-1 p-4  bg-gray-50 dark:bg-gray-900">
       {/* Main Profile Information */}
       <ProfileInformation user={user} />
 

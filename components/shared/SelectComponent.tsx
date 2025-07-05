@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Text, Modal, FlatList } from "react-native";
-import { View } from "@/components/Themed";
+import { TouchableOpacity, Text, View } from "react-native";
+import { useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import SelectModal from "./SelectModal";
 
 interface SelectOption<T> {
   label: string;
@@ -24,15 +25,11 @@ export default function SelectComponent<T>({
   style,
 }: SelectComponentProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
+  const colorScheme = useColorScheme();
 
   const selectedOption = options.find(
     (option) => JSON.stringify(option.value) === JSON.stringify(selectedValue)
   );
-
-  const handleSelect = (value: T) => {
-    onValueChange(value);
-    setIsOpen(false);
-  };
 
   return (
     <>
@@ -41,20 +38,27 @@ export default function SelectComponent<T>({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          backgroundColor: "white",
+          // backgroundColor: "white",
           borderRadius: 8,
           paddingHorizontal: 12,
           paddingVertical: 12,
           borderWidth: 1,
-          borderColor: "#e1e5e9",
+          // borderColor: "#e1e5e9",
           ...style,
         }}
+        className="dark:bg-gray-800 dark:border-gray-600 "
         onPress={() => setIsOpen(true)}
       >
         <Text
           style={{
             fontSize: 16,
-            color: selectedOption ? "#495057" : "#6c757d",
+            color: selectedOption
+              ? colorScheme === "dark"
+                ? "#e5e7eb" // light text for dark mode
+                : "#495057" // dark text for light mode
+              : colorScheme === "dark"
+              ? "#9ca3aa" // muted text for dark mode
+              : "#6c757d", // muted text for light mode
             flex: 1,
           }}
         >
@@ -63,79 +67,17 @@ export default function SelectComponent<T>({
         <Ionicons
           name={isOpen ? "chevron-up" : "chevron-down"}
           size={20}
-          color="#6c757d"
+          color={colorScheme === "dark" ? "#9ca3af" : "#6c757d"}
         />
       </TouchableOpacity>
 
-      <Modal
+      <SelectModal
         visible={isOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsOpen(false)}
-      >
-        <TouchableOpacity
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => setIsOpen(false)}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              borderRadius: 12,
-              maxHeight: 300,
-              width: "80%",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 8,
-            }}
-          >
-            <FlatList
-              data={options}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "#f0f0f0",
-                    backgroundColor:
-                      JSON.stringify(item.value) ===
-                      JSON.stringify(selectedValue)
-                        ? "#f8f9fa"
-                        : "white",
-                  }}
-                  onPress={() => handleSelect(item.value)}
-                >
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      color:
-                        JSON.stringify(item.value) ===
-                        JSON.stringify(selectedValue)
-                          ? "#007AFF"
-                          : "#495057",
-                      fontWeight:
-                        JSON.stringify(item.value) ===
-                        JSON.stringify(selectedValue)
-                          ? "600"
-                          : "400",
-                    }}
-                  >
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        options={options}
+        selectedValue={selectedValue}
+        onSelect={onValueChange}
+        onClose={() => setIsOpen(false)}
+      />
     </>
   );
 }
